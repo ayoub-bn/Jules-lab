@@ -1,0 +1,265 @@
+/* Global Styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light gray background */
+    color: #333; /* Default text color */
+    line-height: 1.6;
+}
+
+/* Header and Navigation */
+header {
+    background-color: #333; /* Dark background for header */
+    color: #fff; /* White text for header */
+    padding: 1rem 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline-block; /* Horizontal layout for nav items */
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #fff; /* White navigation links */
+    text-decoration: none; /* Remove underline */
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+nav ul li a:hover {
+    background-color: #555; /* Darker background on hover */
+    color: #fff;
+}
+
+/* Main Content Area */
+main {
+    padding: 20px;
+    display: block; /* Ensure main is treated as a block for layout */
+}
+
+/* Hero Section */
+#hero {
+    background-color: #666; /* Placeholder background color for hero */
+    color: #fff; /* White text for hero section */
+    padding: 60px 20px; /* Significant padding */
+    text-align: center; /* Center text content */
+}
+
+#hero h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+#hero p {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+}
+
+/* Featured Work Section */
+#featured-work {
+    padding: 40px 20px;
+    text-align: center; /* Center the section heading */
+}
+
+#featured-work h2 {
+    font-size: 2.2rem;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.project-gallery {
+    display: flex; /* Use Flexbox for layout */
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    justify-content: space-around; /* Distribute items evenly */
+    gap: 20px; /* Gap between project items */
+}
+
+.project-gallery > div { /* Individual project item styling */
+    background-color: #fff; /* White background for project items */
+    border: 1px solid #ddd; /* Light border */
+    padding: 15px;
+    width: calc(33.333% - 20px); /* Approximately 3 columns, accounting for gap */
+    margin-bottom: 20px; /* Space below items if they wrap */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+.project-gallery img {
+    max-width: 100%; /* Responsive images */
+    height: auto;
+    display: block; /* Remove extra space below image */
+    margin-bottom: 10px;
+}
+
+.project-gallery h3 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-top: 0;
+}
+
+/* Portfolio Page - Full Project Gallery */
+#portfolio-gallery {
+    padding: 40px 20px; /* Consistent padding with other sections */
+    text-align: center; /* Center the section heading */
+}
+
+#portfolio-gallery h2 {
+    font-size: 2.2rem;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.full-project-gallery {
+    display: flex; /* Use Flexbox for layout */
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    justify-content: space-around; /* Distribute items evenly */
+    gap: 20px; /* Gap between project items */
+}
+
+.project-item { /* Individual project item styling for portfolio page */
+    background-color: #fff; /* White background for project items */
+    border: 1px solid #ddd; /* Light border */
+    padding: 20px; /* More padding for detailed items */
+    width: calc(33.333% - 20px); /* Approximately 3 columns, accounting for gap */
+    margin-bottom: 20px; /* Space below items if they wrap */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Slightly more pronounced shadow */
+    text-align: left; /* Align text to the left within items */
+}
+
+.project-item img {
+    max-width: 100%; /* Responsive images */
+    height: auto;
+    display: block; /* Remove extra space below image */
+    margin-bottom: 15px; /* Space below image */
+}
+
+.project-item h3 {
+    font-size: 1.5rem; /* Larger title for portfolio items */
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.project-item p {
+    font-size: 1rem;
+    color: #555; /* Slightly lighter text for description */
+    line-height: 1.6;
+    margin-bottom: 0; /* Remove bottom margin if it's the last element */
+}
+
+/* About Page Styles */
+#about-me-content {
+    padding: 20px; /* Padding around the content */
+    max-width: 900px; /* Max width for readability */
+    margin: 20px auto; /* Center content and add top/bottom margin */
+    background-color: #fff; /* White background for the content area */
+    box-shadow: 0 0 10px rgba(0,0,0,0.05); /* Subtle shadow for depth */
+}
+
+#about-me-content h2 { /* Main "About Me" heading within this section */
+    font-size: 2rem; /* Slightly smaller than portfolio/featured work titles */
+    color: #333;
+    text-align: center; /* Center the main 'About Me' title */
+    margin-bottom: 30px;
+}
+
+#about-me-content section { /* For #biography, #skills, #design-philosophy */
+    margin-bottom: 30px; /* Space between sections */
+}
+
+#about-me-content section:last-child {
+    margin-bottom: 0; /* No margin for the last section */
+}
+
+#about-me-content h3 { /* Subheadings like "My Story", "Skills" */
+    font-size: 1.6rem;
+    color: #444; /* Slightly lighter than main headings */
+    margin-bottom: 15px;
+    border-bottom: 2px solid #eee; /* Subtle separator */
+    padding-bottom: 5px;
+}
+
+#about-me-content p {
+    font-size: 1rem;
+    line-height: 1.7; /* Increased line height for readability */
+    color: #555;
+    margin-bottom: 15px; /* Space between paragraphs */
+}
+
+#about-me-content #skills ul {
+    list-style: none; /* Remove default bullets */
+    padding-left: 0; /* Remove default padding */
+}
+
+#about-me-content #skills li {
+    background-color: #f9f9f9; /* Light background for skill items */
+    border: 1px solid #e9e9e9; /* Border for skill items */
+    padding: 10px 15px;
+    margin-bottom: 8px; /* Space between skill items */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 0.95rem;
+}
+
+/* Footer */
+footer {
+    background-color: #333; /* Dark background for footer */
+    color: #fff; /* White text for footer */
+    text-align: center;
+    padding: 1.5rem 0;
+    /* position: fixed; removed for normal flow */
+    /* bottom: 0; */
+    width: 100%;
+    margin-top: 20px; /* Add some space above the footer */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    nav ul li {
+        display: block; /* Stack nav items on smaller screens */
+        margin: 10px 0;
+    }
+
+    .project-gallery > div,
+    .project-item { /* Apply to both gallery types */
+        width: calc(50% - 20px); /* 2 columns on medium screens */
+    }
+}
+
+@media (max-width: 576px) {
+    #hero h1 {
+        font-size: 2rem;
+    }
+    #hero p {
+        font-size: 1rem;
+    }
+    #featured-work h2,
+    #portfolio-gallery h2,
+    #about-me-content h2 { /* Apply to About Me section title */
+        font-size: 1.8rem;
+    }
+    #about-me-content h3 { /* Responsive subheadings on About page */
+        font-size: 1.4rem;
+    }
+    .project-gallery > div,
+    .project-item { /* Apply to both gallery types */
+        width: calc(100% - 20px); /* 1 column on small screens */
+    }
+}
