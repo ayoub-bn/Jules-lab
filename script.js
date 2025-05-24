@@ -1,0 +1,311 @@
+// Get a reference to the canvas element
+const canvas = document.getElementById('gameCanvas');
+// Get the 2D rendering context
+const ctx = canvas.getContext('2d');
+
+// Set canvas dimensions
+canvas.width = 800;
+canvas.height = 600;
+
+// Game state
+let animationFrameId; // To control the game loop
+
+// Asset Loading
+const playerImg = new Image();
+const enemyImg = new Image();
+const platformImg = new Image();
+const goalImg = new Image();
+
+let assetsLoaded = 0;
+const totalAssets = 4; // player, enemy, platform, goal
+
+function assetLoadedCallback() {
+  assetsLoaded++;
+  if (assetsLoaded === totalAssets) {
+    tryStartGame();
+  }
+}
+
+function tryStartGame() {
+  // Ensure game loop hasn't started yet
+  if (!animationFrameId) { 
+    animationFrameId = requestAnimationFrame(gameLoop);
+  }
+}
+
+// Assign onload callbacks
+playerImg.onload = assetLoadedCallback;
+enemyImg.onload = assetLoadedCallback;
+platformImg.onload = assetLoadedCallback;
+goalImg.onload = assetLoadedCallback;
+
+// Set image sources - this will trigger loading
+playerImg.src = 'mario.png';
+enemyImg.src = 'enemy.png';
+platformImg.src = 'platform.png';
+goalImg.src = 'goal_pole.png';
+
+
+// Game constants
+const gravity = 0.8;
+
+// Player properties
+const player = {
+  x: 50, 
+  y: 0, 
+  width: 30, // Adjust if your player image has a different aspect ratio
+  height: 50, // Adjust if your player image has a different aspect ratio
+  // color: 'red', // No longer needed
+  speed: 5,
+  velocityY: 0, 
+  jumpForce: 15, 
+  isOnGround: true 
+};
+player.y = canvas.height - player.height - 10; 
+
+
+// Platforms array
+const platforms = [
+  { x: 100, y: canvas.height - 100, width: 150, height: 20 /*, color: 'green'*/ }, 
+  { x: 300, y: canvas.height - 200, width: 100, height: 20 /*, color: 'green'*/ }, 
+  { x: 500, y: canvas.height - 300, width: 120, height: 20 /*, color: 'green'*/ }  
+];
+
+// Enemies array
+const enemyHeight = 40; // Adjust if enemy image aspect ratio differs
+const enemyWidth = 30;  // Adjust if enemy image aspect ratio differs
+const enemies = [
+  { 
+    x: 400, 
+    y: canvas.height - enemyHeight - 10, 
+    width: enemyWidth, 
+    height: enemyHeight, 
+    // color: 'brown', // No longer needed
+    speed: 1, 
+    startX: 400, 
+    moveRange: 100,
+    isActive: true
+  },
+  { 
+    x: platforms[0].x + 20, 
+    y: platforms[0].y - enemyHeight, 
+    width: enemyWidth, 
+    height: enemyHeight, 
+    // color: 'brown', // No longer needed
+    speed: 0.8, 
+    startX: platforms[0].x + 20, 
+    moveRange: platforms[0].width - enemyWidth - 40,
+    isActive: true
+  }
+];
+if (enemies.length > 1) {
+    const platformEnemy = enemies[1];
+    const platform = platforms[0];
+    const maxRange = platform.width - platformEnemy.width; 
+    if (platformEnemy.moveRange > maxRange) {
+        platformEnemy.moveRange = maxRange > 0 ? maxRange : 0;
+    }
+    if (platformEnemy.startX < platform.x) platformEnemy.startX = platform.x;
+    if (platformEnemy.startX + platformEnemy.width > platform.x + platform.width) {
+        platformEnemy.startX = platform.x + platform.width - platformEnemy.width;
+    }
+    platformEnemy.x = platformEnemy.startX; 
+}
+
+// Goal object
+const goal = {
+  width: 10,  // Adjust if goal image aspect ratio differs
+  height: 40, // Adjust if goal image aspect ratio differs
+  // color: 'gold' // No longer needed
+};
+const lastPlatform = platforms[platforms.length - 1];
+goal.x = lastPlatform.x + lastPlatform.width / 2 - goal.width / 2;
+goal.y = lastPlatform.y - goal.height;
+
+
+// Object to keep track of pressed keys
+const keysPressed = {
+  ArrowLeft: false,
+  ArrowRight: false
+};
+
+// --- Drawing Functions ---
+function drawPlayer() {
+  if (playerImg.complete && playerImg.naturalHeight !== 0) { // Check if image is loaded and valid
+    ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+  } else { // Fallback drawing if image fails to load
+    ctx.fillStyle = 'red'; // Fallback color
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+  }
+}
+
+function drawPlatforms() {
+  platforms.forEach(platform => {
+    if (platformImg.complete && platformImg.naturalHeight !== 0) {
+      ctx.drawImage(platformImg, platform.x, platform.y, platform.width, platform.height);
+    } else {
+      ctx.fillStyle = 'green'; // Fallback color
+      ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+    }
+  });
+}
+
+function drawEnemies() {
+  enemies.forEach(enemy => {
+    if (enemy.isActive) {
+      if (enemyImg.complete && enemyImg.naturalHeight !== 0) {
+        ctx.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
+      } else {
+        ctx.fillStyle = 'brown'; // Fallback color
+        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+      }
+    }
+  });
+}
+
+function drawGoal() {
+  if (goalImg.complete && goalImg.naturalHeight !== 0) {
+    ctx.drawImage(goalImg, goal.x, goal.y, goal.width, goal.height);
+  } else {
+    ctx.fillStyle = 'gold'; // Fallback color
+    ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
+  }
+}
+
+// --- Update Functions ---
+function updateEnemies() {
+  enemies.forEach(enemy => {
+    if (!enemy.isActive) return;
+    enemy.x += enemy.speed;
+    if (enemy.x >= enemy.startX + enemy.moveRange) {
+      enemy.x = enemy.startX + enemy.moveRange; 
+      enemy.speed *= -1;
+    } else if (enemy.x <= enemy.startX) {
+      enemy.x = enemy.startX; 
+      enemy.speed *= -1;
+    }
+  });
+}
+
+function updatePlayerPosition() {
+  if (keysPressed.ArrowLeft) player.x -= player.speed;
+  if (keysPressed.ArrowRight) player.x += player.speed;
+  if (player.x < 0) player.x = 0;
+  if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+  player.velocityY += gravity;
+  player.y += player.velocityY;
+  player.isOnGround = false; 
+
+  for (let i = 0; i < platforms.length; i++) {
+    const platform = platforms[i];
+    if (player.velocityY > 0 &&
+        (player.y - player.velocityY) + player.height <= platform.y && 
+        player.y + player.height >= platform.y &&                      
+        player.x + player.width > platform.x &&
+        player.x < platform.x + platform.width) {
+      player.y = platform.y - player.height;
+      player.velocityY = 0;
+      player.isOnGround = true;
+      break; 
+    }
+  }
+
+  if (!player.isOnGround) {
+    const currentMainGroundLevel = canvas.height - player.height - 10;
+    if (player.y + player.height >= currentMainGroundLevel) {
+      player.y = currentMainGroundLevel;
+      player.velocityY = 0;
+      player.isOnGround = true;
+    }
+  }
+}
+
+// --- Collision and Win Condition Functions ---
+function checkPlayerEnemyCollisions() {
+  for (let i = 0; i < enemies.length; i++) {
+    const enemy = enemies[i];
+    if (!enemy.isActive) continue;
+
+    const playerPrevBottom = (player.y - player.velocityY) + player.height;
+    const playerCurrBottom = player.y + player.height;
+
+    if (player.velocityY > 0 && 
+        player.x + player.width > enemy.x && 
+        player.x < enemy.x + enemy.width &&
+        playerPrevBottom <= enemy.y &&       
+        playerCurrBottom >= enemy.y &&       
+        playerCurrBottom <= enemy.y + 10) {  
+      enemy.isActive = false;
+      player.velocityY = -player.jumpForce / 1.5; 
+      player.isOnGround = false; 
+      continue; 
+    }
+
+    if (player.x < enemy.x + enemy.width &&
+        player.x + player.width > enemy.x &&
+        player.y < enemy.y + enemy.height &&
+        player.y + player.height > enemy.y) {
+      console.log('Hit by enemy!');
+      player.x = 50;
+      player.y = canvas.height - player.height - 10; 
+      player.velocityY = 0;
+      player.isOnGround = true; 
+      break; 
+    }
+  }
+}
+
+function checkWinCondition() {
+  if (player.x < goal.x + goal.width &&
+      player.x + player.width > goal.x &&
+      player.y < goal.y + goal.height &&
+      player.y + player.height > goal.y) {
+    console.log('You Win!');
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null; // Ensure it doesn't restart
+    }
+  }
+}
+
+// --- Event Listeners ---
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'ArrowLeft') keysPressed.ArrowLeft = true;
+  else if (event.key === 'ArrowRight') keysPressed.ArrowRight = true;
+  else if (event.code === 'Space' && player.isOnGround) {
+    player.velocityY = -player.jumpForce;
+    player.isOnGround = false; 
+  }
+});
+
+document.addEventListener('keyup', function(event) {
+  if (event.key === 'ArrowLeft') keysPressed.ArrowLeft = false;
+  else if (event.key === 'ArrowRight') keysPressed.ArrowRight = false;
+});
+
+// --- Game Loop ---
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawPlatforms();
+  drawGoal(); 
+  
+  updateEnemies();
+  drawEnemies();   
+  
+  updatePlayerPosition();
+  checkPlayerEnemyCollisions(); 
+  checkWinCondition(); 
+
+  drawPlayer();
+
+  // Only continue loop if game is not over (e.g. win condition not met)
+  if (animationFrameId) { 
+    animationFrameId = requestAnimationFrame(gameLoop);
+  }
+}
+
+// Initial call to start the game is now handled by assetLoadedCallback -> tryStartGame
+// Do not call requestAnimationFrame(gameLoop) here directly.
+// The image src assignments above will trigger the loading process.
