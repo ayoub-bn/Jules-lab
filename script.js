@@ -10,42 +10,6 @@ canvas.height = 600;
 // Game state
 let animationFrameId; // To control the game loop
 
-// Asset Loading
-const playerImg = new Image();
-const enemyImg = new Image();
-const platformImg = new Image();
-const goalImg = new Image();
-
-let assetsLoaded = 0;
-const totalAssets = 4; // player, enemy, platform, goal
-
-function assetLoadedCallback() {
-  assetsLoaded++;
-  if (assetsLoaded === totalAssets) {
-    tryStartGame();
-  }
-}
-
-function tryStartGame() {
-  // Ensure game loop hasn't started yet
-  if (!animationFrameId) { 
-    animationFrameId = requestAnimationFrame(gameLoop);
-  }
-}
-
-// Assign onload callbacks
-playerImg.onload = assetLoadedCallback;
-enemyImg.onload = assetLoadedCallback;
-platformImg.onload = assetLoadedCallback;
-goalImg.onload = assetLoadedCallback;
-
-// Set image sources - this will trigger loading
-playerImg.src = 'mario.png';
-enemyImg.src = 'enemy.png';
-platformImg.src = 'platform.png';
-goalImg.src = 'goal_pole.png';
-
-
 // Game constants
 const gravity = 0.8;
 
@@ -53,9 +17,9 @@ const gravity = 0.8;
 const player = {
   x: 50, 
   y: 0, 
-  width: 30, // Adjust if your player image has a different aspect ratio
-  height: 50, // Adjust if your player image has a different aspect ratio
-  // color: 'red', // No longer needed
+  width: 30,
+  height: 50,
+  color: 'red', // Restored color
   speed: 5,
   velocityY: 0, 
   jumpForce: 15, 
@@ -66,21 +30,21 @@ player.y = canvas.height - player.height - 10;
 
 // Platforms array
 const platforms = [
-  { x: 100, y: canvas.height - 100, width: 150, height: 20 /*, color: 'green'*/ }, 
-  { x: 300, y: canvas.height - 200, width: 100, height: 20 /*, color: 'green'*/ }, 
-  { x: 500, y: canvas.height - 300, width: 120, height: 20 /*, color: 'green'*/ }  
+  { x: 100, y: canvas.height - 100, width: 150, height: 20, color: 'green' }, // Restored color
+  { x: 300, y: canvas.height - 200, width: 100, height: 20, color: 'green' }, // Restored color
+  { x: 500, y: canvas.height - 300, width: 120, height: 20, color: 'green' }  // Restored color
 ];
 
 // Enemies array
-const enemyHeight = 40; // Adjust if enemy image aspect ratio differs
-const enemyWidth = 30;  // Adjust if enemy image aspect ratio differs
+const enemyHeight = 40;
+const enemyWidth = 30;
 const enemies = [
   { 
     x: 400, 
     y: canvas.height - enemyHeight - 10, 
     width: enemyWidth, 
     height: enemyHeight, 
-    // color: 'brown', // No longer needed
+    color: 'brown', // Restored color
     speed: 1, 
     startX: 400, 
     moveRange: 100,
@@ -91,7 +55,7 @@ const enemies = [
     y: platforms[0].y - enemyHeight, 
     width: enemyWidth, 
     height: enemyHeight, 
-    // color: 'brown', // No longer needed
+    color: 'brown', // Restored color
     speed: 0.8, 
     startX: platforms[0].x + 20, 
     moveRange: platforms[0].width - enemyWidth - 40,
@@ -114,9 +78,9 @@ if (enemies.length > 1) {
 
 // Goal object
 const goal = {
-  width: 10,  // Adjust if goal image aspect ratio differs
-  height: 40, // Adjust if goal image aspect ratio differs
-  // color: 'gold' // No longer needed
+  width: 10,
+  height: 40,
+  color: 'gold' // Restored color
 };
 const lastPlatform = platforms[platforms.length - 1];
 goal.x = lastPlatform.x + lastPlatform.width / 2 - goal.width / 2;
@@ -131,45 +95,29 @@ const keysPressed = {
 
 // --- Drawing Functions ---
 function drawPlayer() {
-  if (playerImg.complete && playerImg.naturalHeight !== 0) { // Check if image is loaded and valid
-    ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
-  } else { // Fallback drawing if image fails to load
-    ctx.fillStyle = 'red'; // Fallback color
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-  }
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.width, player.height);
 }
 
 function drawPlatforms() {
   platforms.forEach(platform => {
-    if (platformImg.complete && platformImg.naturalHeight !== 0) {
-      ctx.drawImage(platformImg, platform.x, platform.y, platform.width, platform.height);
-    } else {
-      ctx.fillStyle = 'green'; // Fallback color
-      ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-    }
+    ctx.fillStyle = platform.color;
+    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
   });
 }
 
 function drawEnemies() {
   enemies.forEach(enemy => {
     if (enemy.isActive) {
-      if (enemyImg.complete && enemyImg.naturalHeight !== 0) {
-        ctx.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
-      } else {
-        ctx.fillStyle = 'brown'; // Fallback color
-        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-      }
+      ctx.fillStyle = enemy.color;
+      ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
     }
   });
 }
 
 function drawGoal() {
-  if (goalImg.complete && goalImg.naturalHeight !== 0) {
-    ctx.drawImage(goalImg, goal.x, goal.y, goal.width, goal.height);
-  } else {
-    ctx.fillStyle = 'gold'; // Fallback color
-    ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
-  }
+  ctx.fillStyle = goal.color;
+  ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
 }
 
 // --- Update Functions ---
@@ -264,7 +212,7 @@ function checkWinCondition() {
     console.log('You Win!');
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId);
-      animationFrameId = null; // Ensure it doesn't restart
+      animationFrameId = null; 
     }
   }
 }
@@ -300,12 +248,10 @@ function gameLoop() {
 
   drawPlayer();
 
-  // Only continue loop if game is not over (e.g. win condition not met)
-  if (animationFrameId) { 
+  if (animationFrameId) { // Check if game loop should continue
     animationFrameId = requestAnimationFrame(gameLoop);
   }
 }
 
-// Initial call to start the game is now handled by assetLoadedCallback -> tryStartGame
-// Do not call requestAnimationFrame(gameLoop) here directly.
-// The image src assignments above will trigger the loading process.
+// Start the game loop directly
+animationFrameId = requestAnimationFrame(gameLoop);
