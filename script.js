@@ -1,3 +1,4 @@
+alert('script.js is running!');
 // Get a reference to the canvas element
 const canvas = document.getElementById('gameCanvas');
 // Get the 2D rendering context
@@ -25,7 +26,9 @@ const player = {
   jumpForce: 15, 
   isOnGround: true 
 };
-player.y = canvas.height - player.height - 10; 
+console.log('Canvas height at player.y calculation:', canvas.height);
+// player.y = canvas.height - player.height - 10; 
+player.y = 100; // Temporary Y for testing
 
 
 // Platforms array
@@ -94,6 +97,12 @@ const keysPressed = {
 };
 
 // --- Drawing Functions ---
+function drawGround() {
+  const groundHeight = 10;
+  ctx.fillStyle = 'saddlebrown'; // Or any distinct ground color
+  ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
+}
+
 function drawPlayer() {
   ctx.fillStyle = player.color;
   ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -247,6 +256,7 @@ document.addEventListener('keyup', function(event) {
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  drawGround(); // Draw the ground first
   drawPlatforms();
   drawGoal(); 
   
