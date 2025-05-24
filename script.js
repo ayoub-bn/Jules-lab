@@ -143,7 +143,18 @@ function updatePlayerPosition() {
 
   player.velocityY += gravity;
   player.y += player.velocityY;
-  player.isOnGround = false; 
+
+  // player.isOnGround is now set to false when a jump starts (in keydown),
+  // or should be set to false here if, after movement, no collision is detected below.
+  // For now, per instruction, only removing the unconditional 'player.isOnGround = false;'
+  // This means if player walks off an edge, player.isOnGround remains true until they land.
+
+  // To correctly handle walking off an edge, we would need to:
+  // 1. Store the previous isOnGround state.
+  // 2. Assume it's false for the current physics tick *if* it was previously true.
+  // 3. Then, if collision is detected, set it back to true.
+  // let wasOnGround = player.isOnGround; // Example for more complex logic
+  // if (wasOnGround) player.isOnGround = false; // Tentatively set to false if was on ground
 
   for (let i = 0; i < platforms.length; i++) {
     const platform = platforms[i];
